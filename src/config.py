@@ -50,8 +50,6 @@ class Config:
     context_deep_count: int = 5
     context_shallow_count: int = 10
     allowed_tabs: list[str] = field(default_factory=lambda: ["general", "science", "it", "news"])
-    cache_ttl: int = 300
-    cache_max_size: int = 128
     rate_limit_rpm: int = 10
     reranking_enabled: bool = True
     interactive: bool = True
@@ -69,8 +67,6 @@ class Config:
             context_deep_count=_parse_int("AI_CONTEXT_DEEP", os.getenv("AI_CONTEXT_DEEP", "5"), 5, min_val=0, max_val=20),
             context_shallow_count=_parse_int("AI_CONTEXT_SHALLOW", os.getenv("AI_CONTEXT_SHALLOW", "10"), 10, min_val=0, max_val=30),
             allowed_tabs=[t.strip() for t in os.getenv("AI_TABS", "general,science,it,news").split(",") if t.strip()],
-            cache_ttl=_parse_int("AI_CACHE_TTL", os.getenv("AI_CACHE_TTL", "300"), 300, min_val=0, max_val=3600),
-            cache_max_size=_parse_int("AI_CACHE_SIZE", os.getenv("AI_CACHE_SIZE", "128"), 128, min_val=1, max_val=1024),
             rate_limit_rpm=_parse_int("AI_RATE_LIMIT", os.getenv("AI_RATE_LIMIT", "10"), 10, min_val=1, max_val=120),
             reranking_enabled=_parse_bool(os.getenv("AI_RERANKING", "false")),
             interactive=_parse_bool(os.getenv("AI_INTERACTIVE", "true")),

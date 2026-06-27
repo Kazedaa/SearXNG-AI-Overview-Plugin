@@ -17,19 +17,10 @@ from .reranker import rerank
 from .routes import register_routes
 from .security import generate_token
 
-# Conditional imports for SearXNG environment
-try:
-    from searx.plugins import Plugin, PluginInfo
-    from searx.result_types import EngineResults
-    from searx import settings
-    from flask_babel import gettext
-except ImportError:
-    # Allow import outside SearXNG (for demo/testing)
-    Plugin = object
-    PluginInfo = None
-    EngineResults = None
-    settings = {}
-    gettext = lambda x: x
+from searx.plugins import Plugin, PluginInfo
+from searx.result_types import EngineResults
+from searx import settings
+from flask_babel import gettext
 
 logger = logging.getLogger(__name__)
 
