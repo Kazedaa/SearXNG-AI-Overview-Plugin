@@ -28,19 +28,20 @@ def build_prompt(
 
     # --- Core rules as a proper list ---
     rules = [
-        "Be extremely direct. Start your answer immediately. Do not use phrases like 'Based on the context' or 'Here is the answer.'",
+        "CRITICAL: NEVER output your thought process, internal monologue, or planning.",
+        "CRITICAL: NEVER converse with the user, greet them, or reference previous questions (e.g., NEVER say 'You previously asked...').",
+        "Be extremely direct. Start your answer immediately. Do not use phrases like 'Based on the context'.",
         "Synthesize the provided sources into a high-density, 1-2 paragraph response.",
-        "MANDATORY: Cite your sources inline using [1], [2], etc., matching the source numbers provided.",
-        "If the context does not contain the answer, rely on your general knowledge but state that you are doing so, and cite as [*].",
-        "Never use markdown headers. Use bold text, lists, and inline code formatting where appropriate.",
-        "Keep it professional and objective.",
+        "MANDATORY: Cite your sources inline using [1], [2], etc., matching the source numbers.",
+        "If the context lacks the answer, use general knowledge and cite as [*].",
+        "Never use markdown headers. Use bold text and lists.",
     ]
 
     # --- Task directive ---
     if prev_answer:
-        task = "FOLLOW-UP: The user is asking a follow-up question. Answer it using the new context and conversation history."
+        task = "FOLLOW-UP TASK: Answer the NEW USER QUERY using the CONTEXT and HISTORY. DO NOT summarize the history."
     else:
-        task = "PRIMARY TASK: Answer the user's query directly."
+        task = "PRIMARY TASK: Answer the USER QUERY directly."
 
     # --- Assemble instructions ---
     instructions = [task] + rules
@@ -49,18 +50,19 @@ def build_prompt(
 
     numbered = "\n".join(f"{i + 1}. {r}" for i, r in enumerate(instructions))
 
-    user_content = f"""CONVERSATION HISTORY:
-{prev_answer or 'None.'}
-
-SEARCH CONTEXT (SOURCES):
+    user_content = f"""=== CONTEXT ===
 {context or 'None.'}
 
-USER QUERY: {query}
+=== HISTORY ===
+{prev_answer or 'None.'}
 
-INSTRUCTIONS:
+=== NEW USER QUERY ===
+{query}
+
+=== INSTRUCTIONS ===
 {numbered}
 
-Now, write your response:"""
+Output ONLY the final answer. No thoughts, no chat:"""
 
     return [
         {"role": "system", "content": system_content},

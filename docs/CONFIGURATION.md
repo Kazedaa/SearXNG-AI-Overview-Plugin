@@ -35,7 +35,7 @@ These control how much search result data the AI sees.
 
 | Variable | Default | Range | Description |
 |---|---|---|---|
-| `AI_CONTEXT_DEEP` | `5` | 0–20 | Number of top results included with **full text**. More = better grounding but slower/more tokens. |
+| `AI_CONTEXT_DEEP` | `10` | 0–20 | Number of top results included with **full text**. More = better grounding but slower/more tokens. |
 | `AI_CONTEXT_SHALLOW` | `10` | 0–30 | Additional results included as **headlines only**. Gives broader awareness cheaply. |
 
 **Examples:**
@@ -81,7 +81,7 @@ services:
       - OLLAMA_URL=http://host.docker.internal:11434
       - OLLAMA_CHAT_MODEL=llama3.2
       - OLLAMA_EMBED_MODEL=nomic-embed-text
-      - AI_CONTEXT_DEEP=5
+      - AI_CONTEXT_DEEP=10
       - AI_CONTEXT_SHALLOW=10
       - AI_RERANKING=false
     extra_hosts:
