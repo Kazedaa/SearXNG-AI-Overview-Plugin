@@ -1,0 +1,7 @@
+# Runtime dependencies (provided by SearXNG — listed here for reference)
+flask
+flask-babel
+markupsafe
+
+# Development dependencies
+pytest

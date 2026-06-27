@@ -1,0 +1,19 @@
+services:
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: searxng
+    restart: unless-stopped
+    ports:
+      - "8888:8080"
+    volumes:
+      - ./searxng:/etc/searxng:rw
+      - ./src:/usr/local/searxng/searx/plugins/ai_overview:ro
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - OLLAMA_CHAT_MODEL=llama3.2
+      - OLLAMA_EMBED_MODEL=nomic-embed-text
+      - AI_CONTEXT_DEEP=5
+      - AI_CONTEXT_SHALLOW=10
+      - AI_RERANKING=false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

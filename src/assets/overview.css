@@ -1,0 +1,363 @@
+/* AI Overview — Premium UI Styles */
+/* Uses SearXNG CSS variables for seamless theme integration */
+
+/* === Container === */
+#ai-overview-box {
+    margin: 1rem 0 2rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--color-base-font, #333);
+    border: 1px solid var(--color-base-background-hover, rgba(0,0,0,0.1));
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: var(--color-base-background, transparent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+/* === Header === */
+.ai-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-base-background-hover, rgba(0,0,0,0.08));
+}
+
+.ai-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    background: linear-gradient(90deg, var(--color-result-link, #5e81ac), var(--color-result-link-visited, #b48ead));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.ai-actions button {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: transparent;
+    border: 1px solid var(--color-base-background-hover, rgba(0,0,0,0.15));
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    color: var(--color-result-description, #666);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ai-actions button:hover {
+    background: var(--color-base-background-hover, rgba(0,0,0,0.05));
+    color: var(--color-result-link, #5e81ac);
+    border-color: var(--color-result-link, #5e81ac);
+}
+
+/* === Animations === */
+@keyframes ai-fade-pulse { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
+@keyframes ai-fade-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ai-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+/* === Skeleton Loading === */
+.ai-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: 0.5rem 0;
+}
+
+.ai-skeleton-line {
+    height: 0.9rem;
+    border-radius: 4px;
+    background: linear-gradient(90deg, 
+        var(--color-base-background-hover, rgba(0,0,0,0.06)) 25%, 
+        var(--color-base-background-active, rgba(0,0,0,0.10)) 50%, 
+        var(--color-base-background-hover, rgba(0,0,0,0.06)) 75%);
+    background-size: 200% 100%;
+    animation: ai-shimmer 1.5s ease-in-out infinite;
+    width: 100%;
+}
+
+/* === Answer Area & Markdown === */
+.ai-answer {
+    position: relative;
+    font-size: 0.95rem;
+    color: var(--color-result-description, inherit);
+}
+
+.ai-answer p { margin-bottom: 0.75rem; }
+.ai-answer p:last-child { margin-bottom: 0; }
+.ai-answer strong { color: var(--color-base-font); }
+.ai-answer ul, .ai-answer ol { margin: 0.5rem 0 0.5rem 1.5rem; }
+.ai-answer li { margin-bottom: 0.3rem; }
+.ai-answer code {
+    background: var(--color-base-background-hover, rgba(0,0,0,0.06));
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.85em;
+}
+
+/* === Fenced Code Blocks === */
+.ai-code-block {
+    position: relative;
+    margin: 0.75rem 0;
+    border-radius: 8px;
+    background: #1e1e2e;
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+}
+
+.ai-code-block pre {
+    margin: 0;
+    padding: 1rem 1rem 1rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+.ai-code-block pre::-webkit-scrollbar { height: 6px; }
+.ai-code-block pre::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+.ai-code-block code {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    color: #cdd6f4;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    white-space: pre;
+    display: block;
+}
+
+.ai-code-lang {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.45);
+    font-family: SFMono-Regular, Consolas, monospace;
+}
+
+.ai-code-copy {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.5rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.ai-code-copy:hover {
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+}
+
+/* === Streaming Cursor === */
+.ai-cursor {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.2em;
+    background: var(--color-result-link-visited, #b48ead);
+    vertical-align: text-bottom;
+    animation: ai-fade-pulse 1s ease-in-out infinite;
+    margin-left: 0.2rem;
+    border-radius: 2px;
+}
+
+.ai-chunk {
+    opacity: 1;
+    animation: ai-fade-in 0.3s ease-out;
+}
+
+/* === Citations === */
+a.ai-citation {
+    text-decoration: none;
+    color: var(--color-result-link, #5e81ac);
+    background: var(--color-base-background-hover, rgba(0,0,0,0.04));
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0 0.2rem;
+    margin: 0 0.1rem;
+    border-radius: 4px;
+    vertical-align: super;
+    transition: background 0.2s;
+}
+
+a.ai-citation:hover {
+    background: var(--color-result-link, #5e81ac);
+    color: white;
+}
+
+/* === Source Cards (Carousel) === */
+.ai-sources-container {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 1rem 0 0.5rem 0;
+    margin-top: 1rem;
+    border-top: 1px solid var(--color-base-background-hover, rgba(0,0,0,0.08));
+    scrollbar-width: thin;
+}
+
+.ai-sources-container::-webkit-scrollbar { height: 6px; }
+.ai-sources-container::-webkit-scrollbar-thumb { background: var(--color-base-background-active); border-radius: 10px; }
+
+.ai-source-card {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--color-base-background-hover, rgba(0,0,0,0.03));
+    border: 1px solid var(--color-base-background-hover, rgba(0,0,0,0.1));
+    border-radius: 20px;
+    text-decoration: none;
+    color: var(--color-base-font);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.ai-source-card:hover {
+    background: var(--color-base-background-active, rgba(0,0,0,0.08));
+    border-color: var(--color-result-link, #5e81ac);
+}
+
+.ai-source-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+}
+
+.ai-source-domain {
+    font-weight: 500;
+}
+
+.ai-source-ref {
+    color: var(--color-result-link);
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-right: 0.2rem;
+}
+
+/* === Chat History & Follow-up === */
+.ai-chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ai-chat-turn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ai-user-query {
+    align-self: flex-end;
+    background: var(--color-result-link, #5e81ac);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 16px 16px 0 16px;
+    font-size: 0.9rem;
+    max-width: 85%;
+}
+
+.ai-bot-response {
+    align-self: flex-start;
+    width: 100%;
+}
+
+.ai-followup-form {
+    display: flex;
+    align-items: center;
+    margin-top: 1.5rem;
+    position: relative;
+}
+
+.ai-followup-form input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--color-base-background-active, rgba(0,0,0,0.15));
+    padding: 0.75rem 2.5rem 0.75rem 0;
+    font-size: 0.95rem;
+    color: var(--color-base-font);
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.ai-followup-form input:focus {
+    border-bottom-color: var(--color-result-link, #5e81ac);
+}
+
+.ai-followup-form button {
+    position: absolute;
+    right: 0;
+    background: transparent;
+    border: none;
+    color: var(--color-result-link, #5e81ac);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.ai-followup-form button:hover {
+    background: var(--color-base-background-hover, rgba(0,0,0,0.08));
+}
+
+/* === Reasoning/Think Block === */
+.ai-reasoning {
+    margin: 0.5rem 0;
+    padding: 0.5rem 0.75rem;
+    border-left: 3px solid var(--color-result-link-visited, #b48ead);
+    background: var(--color-base-background-hover, rgba(0,0,0,0.03));
+    font-size: 0.85rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.ai-reasoning summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--color-result-link-visited, #b48ead);
+    list-style: none;
+}
+.ai-reasoning summary::-webkit-details-marker { display: none; }
+
+.ai-thought-content {
+    margin-top: 0.5rem;
+    white-space: pre-wrap;
+    color: var(--color-result-description);
+}
+
+/* === Error === */
+.ai-error {
+    color: #bf616a;
+    font-weight: 500;
+    background: rgba(191, 97, 106, 0.1);
+    padding: 0.75rem;
+    border-radius: 8px;
+    display: inline-block;
+}
