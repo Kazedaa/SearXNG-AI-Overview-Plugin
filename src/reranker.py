@@ -76,7 +76,18 @@ def rerank(
     # Sort descending by score
     scored_results.sort(key=lambda x: x[0], reverse=True)
 
-    # Extract the top_k results
-    top_results = [r for score, r in scored_results[:top_k]]
+    # Dynamic Relative Thresholding:
+    # Drop results that are significantly worse than the best result.
+    # This aggressively cuts out noise, shortening the prompt and saving latency.
+    if scored_results:
+        top_score = scored_results[0][0]
+        # Keep only results within 0.15 cosine similarity of the best match
+        threshold = top_score - 0.15
+        filtered_results = [r for score, r in scored_results if score >= threshold]
+    else:
+        filtered_results = []
+
+    # Extract the top_k results from the filtered list
+    top_results = filtered_results[:top_k]
 
     return other_results + top_results

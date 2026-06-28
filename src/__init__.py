@@ -16,6 +16,7 @@ from .intent import classify
 from .reranker import rerank
 from .routes import register_routes
 from .security import generate_token
+from .store import context_store
 
 from searx.plugins import Plugin, PluginInfo
 from searx.result_types import EngineResults
@@ -126,13 +127,14 @@ class SXNGPlugin(Plugin):
             lang = search.search_query.lang
             token = generate_token(query, self.secret)
 
-            # Build JS config object — context is only sent to the stream endpoint,
-            # not rendered in the page source unnecessarily
+            # Store the full search context server-side so we don't leak it in the HTML source
+            context_store.put(token, context_str, urls)
+
+            # Build JS config object — context is now stored securely on the server
             js_config = {
                 "query": query,
                 "lang": lang,
                 "urls": urls,
-                "context": context_str,
                 "token": token,
                 "fastAnswer": fast_answer,
                 "scriptRoot": (request.script_root if request else "").rstrip("/"),

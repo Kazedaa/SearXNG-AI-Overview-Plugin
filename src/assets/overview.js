@@ -107,7 +107,7 @@
             try {
                 const urlObj = new URL(url);
                 const domain = urlObj.hostname.replace("www.", "");
-                const favicon = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=32`;
+                const favicon = `https://icons.duckduckgo.com/ip3/${encodeURIComponent(domain)}.ico`;
 
                 const card = document.createElement("a");
                 card.className = "ai-source-card";
@@ -180,7 +180,6 @@
                 q: queryToAsk,
                 orig_q: CONFIG.query,
                 lang: CONFIG.lang,
-                context: currentContext,
                 tk: CONFIG.token,
                 prev_answer: conversationHistory
             };
@@ -211,6 +210,7 @@
             let collectedResponse = "";
             let isThinking = false;
             let thoughtHtml = "";
+            let lastRenderTime = 0;
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -241,15 +241,22 @@
                     streamBuffer = "";
                 }
 
-                // Render current state
-                let finalHtml = "";
-                if (thoughtHtml) {
-                    finalHtml += `<details class="ai-reasoning"><summary>Thought Process</summary><div class="ai-thought-content">${escapeHtml(thoughtHtml)}</div></details>`;
+                // Throttle DOM updates to prevent CPU starvation and scroll jank
+                const now = Date.now();
+                if (now - lastRenderTime > 50) {
+                    lastRenderTime = now;
+                    let finalHtml = "";
+                    if (thoughtHtml) {
+                        finalHtml += `<details class="ai-reasoning"><summary>Thought Process</summary><div class="ai-thought-content">${escapeHtml(thoughtHtml)}</div></details>`;
+                    }
+                    finalHtml += renderMarkdownAndCitations(collectedResponse);
+                    finalHtml += '<span class="ai-cursor"></span>';
+                    
+                    // requestAnimationFrame ensures we paint on the next browser cycle
+                    requestAnimationFrame(() => {
+                        answerContainer.innerHTML = finalHtml;
+                    });
                 }
-                finalHtml += renderMarkdownAndCitations(collectedResponse);
-                finalHtml += '<span class="ai-cursor"></span>';
-                
-                answerContainer.innerHTML = finalHtml;
             }
 
             // Final render without cursor
