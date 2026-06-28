@@ -118,11 +118,11 @@ if command -v ollama &> /dev/null; then
     echo ""
 
     # Chat model
-    if ollama list 2>/dev/null | grep -q "llama3.2"; then
-        success "Chat model (llama3.2) already downloaded"
+    if ollama list 2>/dev/null | grep -q "gemma3:4b"; then
+        success "Chat model (gemma3:4b) already downloaded"
     else
-        info "Downloading chat model: llama3.2 (~2.0 GB)..."
-        ollama pull llama3.2 || warn "Failed to pull llama3.2. You can do this manually later."
+        info "Downloading chat model: gemma3:4b (~2.5 GB)..."
+        ollama pull gemma3:4b || warn "Failed to pull gemma3:4b. You can do this manually later."
     fi
 
     # Embedding model (optional, for re-ranking)

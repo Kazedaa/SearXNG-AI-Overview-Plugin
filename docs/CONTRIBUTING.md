@@ -6,7 +6,7 @@ Thanks for your interest in contributing! This document covers how to set up a d
 
 ### Prerequisites
 - Python 3.11+
-- Ollama running locally with `llama3.2` pulled
+- Ollama running locally with `gemma3:4b` pulled
 - Docker (for integration testing)
 
 ### Clone and Install
@@ -30,6 +30,7 @@ src/                  # The plugin package — this gets mounted into SearXNG
 ├── reranker.py       # Semantic re-ranking
 ├── routes.py         # Flask endpoints
 ├── security.py       # HMAC tokens + rate limiting
+├── store.py          # Server-side context caching
 └── assets/           # Frontend (HTML/CSS/JS)
 ```
 

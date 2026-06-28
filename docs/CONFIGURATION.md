@@ -9,7 +9,7 @@ Set these in your `docker-compose.yml` under `environment:`, or in a `.env` file
 | Variable | Default | Description |
 |---|---|---|
 | `OLLAMA_URL` | `http://localhost:11434` | Ollama API base URL. Use `http://host.docker.internal:11434` when running SearXNG in Docker with Ollama on the host. |
-| `OLLAMA_CHAT_MODEL` | `llama3.2` | The LLM model for generating AI overviews. Must be pulled in Ollama first. |
+| `OLLAMA_CHAT_MODEL` | `gemma3:4b` | The LLM model for generating AI overviews. Must be pulled in Ollama first. |
 | `OLLAMA_EMBED_MODEL` | `nomic-embed-text` | Embedding model for semantic re-ranking. Only used when `AI_RERANKING=true`. |
 
 ### Model Recommendations
@@ -17,10 +17,10 @@ Set these in your `docker-compose.yml` under `environment:`, or in a `.env` file
 | Model | Size | Speed | Quality | Use Case |
 |---|---|---|---|---|
 | `qwen3:1.7b` | ~1 GB | Fast | Good | Weak hardware, quick answers |
-| `llama3.2` | ~2.5 GB | Medium | Great | **Recommended default** |
+| `gemma3:4b` | ~2.5 GB | Fast | Excellent | **Recommended default** |
+| `llama3.2` | ~2 GB | Medium | Great | Solid alternative |
 | `qwen3:8b` | ~5 GB | Slower | Excellent | Powerful GPU, best quality |
-| `llama3.2` | ~2 GB | Medium | Great | Alternative to Qwen |
-| `mistral` | ~4 GB | Medium | Great | Another solid alternative |
+| `mistral` | ~4 GB | Medium | Great | Another alternative |
 
 ## Generation Settings
 
@@ -60,7 +60,7 @@ AI_CONTEXT_SHALLOW=20
 |---|---|---|
 | `AI_TABS` | `general,science,it,news` | Comma-separated SearXNG tabs where AI Overview is active. Set to `general` to only show on the main tab. |
 | `AI_RATE_LIMIT` | `10` | Max requests per minute per IP address (1–120). |
-| `AI_RERANKING` | `false` | Enable semantic re-ranking using embeddings. Requires `nomic-embed-text` model. Adds ~1-2s latency but improves answer relevance. |
+| `AI_RERANKING` | `true` | Enable semantic re-ranking using embeddings. Requires `nomic-embed-text` model. Features dynamic relative thresholding to drop useless results, saving latency. |
 | `AI_INTERACTIVE` | `true` | Enable follow-up questions, copy button, and regenerate button. |
 | `AI_QUESTION_MARK_ONLY` | `false` | Only show AI overview for queries containing `?`. Reduces unnecessary AI calls. |
 
@@ -79,11 +79,11 @@ services:
       - ./src:/usr/local/searxng/searx/plugins/ai_overview:ro
     environment:
       - OLLAMA_URL=http://host.docker.internal:11434
-      - OLLAMA_CHAT_MODEL=llama3.2
+      - OLLAMA_CHAT_MODEL=gemma3:4b
       - OLLAMA_EMBED_MODEL=nomic-embed-text
       - AI_CONTEXT_DEEP=10
       - AI_CONTEXT_SHALLOW=10
-      - AI_RERANKING=false
+      - AI_RERANKING=true
     extra_hosts:
       - "host.docker.internal:host-gateway"
 ```

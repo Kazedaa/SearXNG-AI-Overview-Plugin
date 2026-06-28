@@ -27,7 +27,7 @@ This guide walks you through setting up SearXNG with the AI Overview plugin from
 │  │   SearXNG         │   │    Ollama       │  │
 │  │   (Docker)        │──▶│    (Native)     │  │
 │  │                   │   │                 │  │
-│  │  + AI Overview    │   │  llama3.2       │  │
+│  │  + AI Overview    │   │  gemma3:4b      │  │
 │  │    Plugin         │   │  nomic-embed    │  │
 │  └──────────────────┘   └────────────────┘  │
 │         ▲                                    │
@@ -100,13 +100,13 @@ You need at least the **chat model**. The embedding model is optional (used for 
 
 ```bash
 # Required — the main AI model (~2.5 GB download)
-ollama pull llama3.2
+ollama pull gemma3:4b
 
 # Optional — for semantic re-ranking (~340 MB download)
 ollama pull nomic-embed-text
 ```
 
-> **Model choices:** `llama3.2` is recommended for a good balance of speed and quality. Change the model via the `OLLAMA_CHAT_MODEL` environment variable.
+> **Model choices:** `gemma3:4b` is recommended for a good balance of speed and quality. Change the model via the `OLLAMA_CHAT_MODEL` environment variable.
 
 ---
 
@@ -285,7 +285,7 @@ docker exec searxng wget -q -O- http://host.docker.internal:11434/api/tags
 The model is likely loading for the first time. This can take 10–30 seconds depending on your hardware. Try the search again.
 
 If timeouts persist, check if your machine has enough RAM for the model:
-- `llama3.2` needs ~3 GB RAM
+- `gemma3:4b` needs ~3-4 GB RAM
 - `qwen3:8b` needs ~5 GB RAM
 
 ### SearXNG container won't start
@@ -303,11 +303,11 @@ docker compose logs searxng
 Edit `docker-compose.yml`:
 ```yaml
 environment:
-  - OLLAMA_CHAT_MODEL=llama3.2  # or any model from ollama.com/library
+  - OLLAMA_CHAT_MODEL=gemma3:4b  # or any model from ollama.com/library
 ```
 
 Then pull the model and restart:
 ```bash
-ollama pull llama3.2
+ollama pull gemma3:4b
 docker compose restart
 ```

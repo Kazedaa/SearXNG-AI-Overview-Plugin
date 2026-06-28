@@ -36,7 +36,7 @@ Returns `navigational` (skip AI), `informational` (use AI), or `ambiguous` (use 
 Embeds query + results via Ollama, computes cosine similarity, sorts by relevance. Pure Python (no numpy).
 
 ### `prompt.py` — Prompt Assembly
-Builds messages list with system prompt (role, date, language) and user prompt with XML sections.
+Builds messages list with strict formatting guidelines (bolding, lists) and user prompt blocks.
 
 ### `ollama.py` — Ollama Client
 Uses `http.client` (stdlib). `stream_chat()` yields tokens from NDJSON. `get_embeddings()` returns vectors. User-friendly error messages.
@@ -48,6 +48,9 @@ HMAC tokens: `{timestamp}.{hmac}` covering `{ts}:{query}`. Rate limiter: sliding
 - `POST /ai-stream` — Main streaming endpoint
 - `POST /ai-followup` — Follow-up conversations
 
+### `store.py` — Context Store (Security)
+Thread-safe, TTL-based cache. Keeps the heavy search context string on the backend instead of leaking it in the HTML page source. Tokens act as keys.
+
 ### `assets/` — Frontend
 - `overview.html` — HTML shell with skeleton, answer area, source cards, follow-up form
 - `overview.css` — Uses SearXNG CSS variables for theme integration
@@ -57,8 +60,8 @@ HMAC tokens: `{timestamp}.{hmac}` covering `{ts}:{query}`. Rate limiter: sliding
 
 ```
 Query → intent.classify() → parse_results() → rerank() → assemble_context()
-      → generate_token() → inject HTML+JS
+      → generate_token() → store.put(context) → inject HTML+JS
       
-Browser JS → POST /ai-stream → validate_token() → build_prompt()
-           → stream_chat() → render markdown + citations
+Browser JS → POST /ai-stream (with token) → validate_token() → store.get(context)
+           → build_prompt() → stream_chat() → render markdown + citations
 ```
