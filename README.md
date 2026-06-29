@@ -13,7 +13,7 @@ When you search, the plugin takes your search results, feeds them to a local LLM
 - **Semantic Re-ranking** — Optionally re-ranks results by relevance using `nomic-embed-text` embeddings before feeding them to the LLM.
 - **Smart Intent Detection** — Automatically skips AI for navigational queries (e.g., `youtube.com`) to save resources
 - **Conversational Follow-ups** — Ask follow-up questions without leaving the search page
-- **Streaming Markdown** — Real-time token-by-token rendering with inline citations `[1]`, `[2]` linking back to sources
+- **Rich Streaming Markdown** — Real-time token-by-token rendering with tables, blockquotes, code blocks, and citations.
 
 ## 🌐 Exposing to the Internet (Security)
 
