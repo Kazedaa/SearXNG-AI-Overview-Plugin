@@ -187,7 +187,7 @@
 }
 
 /* === Citations === */
-a.ai-citation {
+.ai-citation {
     text-decoration: none;
     color: var(--color-result-link, #5e81ac);
     background: var(--color-base-background-hover, rgba(0,0,0,0.04));
@@ -198,9 +198,10 @@ a.ai-citation {
     border-radius: 4px;
     vertical-align: super;
     transition: background 0.2s;
+    cursor: pointer;
 }
 
-a.ai-citation:hover {
+.ai-citation:hover {
     background: var(--color-result-link, #5e81ac);
     color: white;
 }

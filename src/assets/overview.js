@@ -59,7 +59,7 @@
         html = html.replace(/^(#{1,6})\s+(.*)$/gm, (match, hashes, text) => `<h${hashes.length}>${text}</h${hashes.length}>`);
 
         // Blockquotes (matching &gt; because of escapeHtml, and allowing leading spaces)
-        html = html.replace(/^[ \t]*&gt;\s+(.*)$/gm, '<blockquote class="ai-blockquote">$1</blockquote>');
+        html = html.replace(/^[ \t]*&gt;\s+(.+)$/gm, '<blockquote class="ai-blockquote">$1</blockquote>');
 
         // Tables
         html = html.replace(/^\|(.+)\|[ \t]*$/gm, (m, content) => {
@@ -72,11 +72,11 @@
         html = html.replace(/<\/table><\/div>/g, '</tbody></table></div>'); // Close tbody
 
         // Numbered lists
-        html = html.replace(/^(\d+)\.\s+(.*)$/gm, '<li value="$1">$2</li>');
+        html = html.replace(/^[ \t]*(\d+)\.\s+(.*)$/gm, '<li value="$1">$2</li>');
         html = html.replace(/(<li value="\d+">[^]*?<\/li>(?:\n<li value="\d+">[^]*?<\/li>)*)/g, '<ol>$1</ol>');
 
         // Bullet lists
-        html = html.replace(/^[-*]\s+(.*)$/gm, '<li>$1</li>');
+        html = html.replace(/^[ \t]*[-*]\s+(.*)$/gm, '<li>$1</li>');
         html = html.replace(/(<li>.*<\/li>(?:\n<li>.*<\/li>)*)/g, '<ul>$1</ul>');
 
         // Clean up newlines inside block elements so they don't get <br/>
@@ -97,22 +97,34 @@
             html = html.replace(`%%CODEBLOCK_${i}%%`, block);
         });
 
-        // Step 5: Citations — [1], [2,3], etc.
+        // Step 5: Citations — [1], [2,3], [1][2], [1], [2], etc.
+        html = html.replace(/\]\s*,?\s*\[/g, ', ');
         const re = /\[(\d{1,2}(?:\s*,\s*\d{1,2})*)\]/g;
         html = html.replace(re, (match, p1) => {
+            let nums = p1.split(/\s*,\s*/).map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+            if (nums.length === 0) return match;
+            
             let links = [];
-            for (const n of p1.split(/\s*,\s*/)) {
-                const idx = parseInt(n.trim());
+            let titles = [];
+            for (const idx of nums) {
                 if (idx >= 1 && idx <= CONFIG.urls.length && CONFIG.urls[idx - 1]) {
                     const url = CONFIG.urls[idx - 1];
                     let domain = "";
                     try { domain = new URL(url).hostname.replace("www.", ""); } catch(e){}
-                    links.push(`<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="ai-citation" title="${escapeHtml(domain)}">[${escapeHtml(n.trim())}]</a>`);
-                } else {
-                    links.push(`[${escapeHtml(n.trim())}]`);
+                    links.push({ url, domain, idx });
+                    titles.push(`[${idx}] ${domain}`);
                 }
             }
-            return links.join('');
+            
+            if (links.length === 0) {
+                return `[${p1}]`;
+            }
+            
+            if (links.length === 1) {
+                return `<a href="${escapeHtml(links[0].url)}" target="_blank" rel="noopener noreferrer" class="ai-citation" title="${escapeHtml(links[0].domain)}">[${links[0].idx}]</a>`;
+            } else {
+                return `<span class="ai-citation" title="${escapeHtml(titles.join(' | '))}">&nbsp;[*]&nbsp;</span>`;
+            }
         });
 
         return html;
@@ -287,6 +299,7 @@
             }
             finalHtml += renderMarkdownAndCitations(collectedResponse);
             answerContainer.innerHTML = finalHtml;
+            answerContainer.dataset.rawMarkdown = collectedResponse;
 
             // Update conversation history
             conversationHistory += `\nUser: ${queryToAsk}\nAI: ${collectedResponse}\n`;
@@ -312,7 +325,7 @@
     
     // Copy button
     document.getElementById("ai-copy-btn").addEventListener("click", (e) => {
-        const text = answerContainer.innerText.replace("Thought Process", "").trim();
+        const text = (answerContainer.dataset.rawMarkdown || answerContainer.innerText).trim();
         navigator.clipboard.writeText(text).then(() => {
             const btn = e.currentTarget;
             const origHtml = btn.innerHTML;
