@@ -32,7 +32,15 @@
         </div>
 
         <!-- Answer content area -->
-        <div id="ai-answer" class="ai-answer"></div>
+        <div class="ai-answer-wrapper ai-collapsed" id="ai-answer-wrapper">
+            <div id="ai-answer" class="ai-answer"></div>
+            <div id="ai-answer-fade" class="ai-answer-fade" style="display: none;">
+                <button id="ai-show-more-btn" class="ai-show-more-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    <span>Show More</span>
+                </button>
+            </div>
+        </div>
         
         <!-- Source cards carousel -->
         <div id="ai-sources-container" class="ai-sources-container"></div>

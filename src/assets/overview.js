@@ -289,6 +289,10 @@
                     finalHtml += '<span class="ai-cursor"></span>';
                     
                     answerContainer.innerHTML = finalHtml;
+                    
+                    if (answerContainer.scrollHeight > 380) {
+                        document.getElementById("ai-answer-fade").style.display = "flex";
+                    }
                 }
             }
 
@@ -300,6 +304,9 @@
             finalHtml += renderMarkdownAndCitations(collectedResponse);
             answerContainer.innerHTML = finalHtml;
             answerContainer.dataset.rawMarkdown = collectedResponse;
+            if (answerContainer.scrollHeight > 380) {
+                document.getElementById("ai-answer-fade").style.display = "flex";
+            }
 
             // Update conversation history
             conversationHistory += `\nUser: ${queryToAsk}\nAI: ${collectedResponse}\n`;
@@ -337,6 +344,22 @@
     // Regenerate button
     document.getElementById("ai-regen-btn").addEventListener("click", () => {
         startStream(CONFIG.query, false);
+    });
+
+    // Expand/Collapse button
+    document.getElementById("ai-show-more-btn").addEventListener("click", () => {
+        const wrapper = document.getElementById("ai-answer-wrapper");
+        const btnSpan = document.querySelector("#ai-show-more-btn span");
+        if (wrapper.classList.contains("ai-collapsed")) {
+            wrapper.classList.remove("ai-collapsed");
+            wrapper.classList.add("ai-expanded");
+            btnSpan.textContent = "Show Less";
+        } else {
+            wrapper.classList.remove("ai-expanded");
+            wrapper.classList.add("ai-collapsed");
+            btnSpan.textContent = "Show More";
+            wrapper.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
     });
 
     // Follow-up form
