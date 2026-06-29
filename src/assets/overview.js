@@ -36,10 +36,10 @@
         // Step 1: Extract fenced code blocks BEFORE escaping, so their content
         // is preserved verbatim. We replace them with placeholders and re-inject later.
         const codeBlocks = [];
-        text = text.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
+        text = text.replace(/```([^\n]*)\n([\s\S]*?)```/g, (match, lang, code) => {
             const placeholder = `%%CODEBLOCK_${codeBlocks.length}%%`;
             const escapedCode = escapeHtml(code.replace(/\n$/, "")); // trim trailing newline
-            const langLabel = lang ? `<span class="ai-code-lang">${escapeHtml(lang)}</span>` : "";
+            const langLabel = lang.trim() ? `<span class="ai-code-lang">${escapeHtml(lang.trim())}</span>` : "";
             const copyBtn = `<button class="ai-code-copy" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('code').textContent).then(()=>{this.textContent='✅';setTimeout(()=>this.textContent='Copy',1500)})">Copy</button>`;
             codeBlocks.push(
                 `<div class="ai-code-block">${langLabel}${copyBtn}<pre><code class="language-${escapeHtml(lang || "text")}">${escapedCode}</code></pre></div>`
@@ -54,7 +54,22 @@
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
         html = html.replace(/`(.*?)`/g, '<code>$1</code>');
-        html = html.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+        
+        // Headings
+        html = html.replace(/^(#{1,6})\s+(.*)$/gm, (match, hashes, text) => `<h${hashes.length}>${text}</h${hashes.length}>`);
+
+        // Blockquotes (matching &gt; because of escapeHtml, and allowing leading spaces)
+        html = html.replace(/^[ \t]*&gt;\s+(.*)$/gm, '<blockquote class="ai-blockquote">$1</blockquote>');
+
+        // Tables
+        html = html.replace(/^\|(.+)\|[ \t]*$/gm, (m, content) => {
+            if (content.includes('---')) return '<!--SEP-->';
+            return '<tr><td>' + content.split('|').map(c => c.trim()).join('</td><td>') + '</td></tr>';
+        });
+        html = html.replace(/(<tr><td>.*<\/td><\/tr>(?:\n(?:<!--SEP-->\n)?<tr><td>.*<\/td><\/tr>)*)/g, '<div class="ai-table-wrapper"><table>$1</table></div>');
+        html = html.replace(/<table>\s*<tr>(.*?)<\/tr>\s*<!--SEP-->\s*/g, '<table><thead><tr>$1</tr></thead><tbody>');
+        html = html.replace(/<thead><tr>(.*?)<\/tr><\/thead>/g, (m, p1) => `<thead><tr>${p1.replace(/<td>/g, '<th>').replace(/<\/td>/g, '</th>')}</tr></thead>`);
+        html = html.replace(/<\/table><\/div>/g, '</tbody></table></div>'); // Close tbody
 
         // Numbered lists
         html = html.replace(/^(\d+)\.\s+(.*)$/gm, '<li value="$1">$2</li>');
@@ -64,11 +79,18 @@
         html = html.replace(/^[-*]\s+(.*)$/gm, '<li>$1</li>');
         html = html.replace(/(<li>.*<\/li>(?:\n<li>.*<\/li>)*)/g, '<ul>$1</ul>');
 
+        // Clean up newlines inside block elements so they don't get <br/>
+        html = html.replace(/(<table[^>]*>[\s\S]*?<\/table>)/g, m => m.replace(/\n/g, ''));
+        html = html.replace(/(<ul[^>]*>[\s\S]*?<\/ul>)/g, m => m.replace(/\n/g, ''));
+        html = html.replace(/(<ol[^>]*>[\s\S]*?<\/ol>)/g, m => m.replace(/\n/g, ''));
+        html = html.replace(/(<blockquote[^>]*>[\s\S]*?<\/blockquote>)/g, m => m.replace(/\n/g, '<br/>'));
+
         // Paragraphs / Newlines
-        html = html.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br/>');
-        if (!html.startsWith('<p>') && !html.startsWith('<ul>') && !html.startsWith('<ol>') && !html.startsWith('<h3>')) {
+        html = html.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br/>');
+        if (!html.startsWith('<p>') && !html.startsWith('<ul') && !html.startsWith('<ol') && !html.startsWith('<h') && !html.startsWith('<div')) {
             html = '<p>' + html + '</p>';
         }
+        html = html.replace(/<p>\s*<\/p>/g, '');
 
         // Step 4: Re-inject code blocks
         codeBlocks.forEach((block, i) => {
@@ -96,14 +118,16 @@
         return html;
     }
 
-    // ── Render Source Cards ─────────────────────────────────────────
     function renderSourceCards() {
         sourcesContainer.innerHTML = "";
         if (!CONFIG.urls || CONFIG.urls.length === 0) return;
 
-        const uniqueUrls = [...new Set(CONFIG.urls)].slice(0, 5);
+        const seenUrls = new Set();
 
-        uniqueUrls.forEach((url, i) => {
+        CONFIG.urls.forEach((url, i) => {
+            if (!url || seenUrls.has(url)) return;
+            seenUrls.add(url);
+            
             try {
                 const urlObj = new URL(url);
                 const domain = urlObj.hostname.replace("www.", "");
@@ -252,10 +276,7 @@
                     finalHtml += renderMarkdownAndCitations(collectedResponse);
                     finalHtml += '<span class="ai-cursor"></span>';
                     
-                    // requestAnimationFrame ensures we paint on the next browser cycle
-                    requestAnimationFrame(() => {
-                        answerContainer.innerHTML = finalHtml;
-                    });
+                    answerContainer.innerHTML = finalHtml;
                 }
             }
 

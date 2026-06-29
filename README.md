@@ -1,5 +1,7 @@
 # SearXNG AI Overview Plugin
 
+![SearXNG AI Overview Plugin](assets/banner.png)
+
 A fully local, AI Overview plugin for [SearXNG](https://github.com/searxng/searxng). Powered by [Ollama](https://ollama.com).
 
 When you search, the plugin takes your search results, feeds them to a local LLM as context (RAG), and streams back a concise, well-cited AI-generated answer — right above your normal search results. No API keys. No cloud. Everything runs on your machine.

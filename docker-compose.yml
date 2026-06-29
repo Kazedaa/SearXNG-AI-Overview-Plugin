@@ -12,7 +12,7 @@ services:
       - OLLAMA_URL=http://host.docker.internal:11434
       - OLLAMA_CHAT_MODEL=gemma3:4b
       - OLLAMA_EMBED_MODEL=nomic-embed-text
-      - AI_CONTEXT_DEEP=10
+      - AI_CONTEXT_DEEP=5
       - AI_CONTEXT_SHALLOW=10
       - AI_RERANKING=false
     extra_hosts:
